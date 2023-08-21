@@ -561,12 +561,22 @@ float map (t_3d_point pos, t_all *all)
 {
 	float re;
 
+	all->plan.in = 0;
+	all->sphere.in = 0;
+	all->cylinder.in = 0;
 	float cy = the_cylindre(pos, all->cylinder.top, all->cylinder.bottom, all->cylinder.rayon);
 	float sp = sphere(soustraction_3d_point(pos, all->sphere.centre), all->sphere.rayon);
-    float pl = plane(soustraction_3d_point(pos, vec3 (-0.1, -0.1, -0.1)), vec3 (0.f,1.f,0.f), 0.f);
+    float pl = plane(soustraction_3d_point(pos, all->plan.position), all->plan.normal, 0.f);
 	re = cy;
-	re = fmin(cy, sp);
+	re = fmin(re, sp);
 	re = fmin(re ,pl);
+	if (re == pl)
+		all->plan.in = 1;
+	else if (re == cy)
+		all->cylinder.in = 1;
+	else if (re == sp)
+		all->sphere.in = 1;
+	//printf ("IN %d %d %d \n", all->plan.in, all->cylinder.in, all->sphere.in);
 	return (re);
 }
 
@@ -624,7 +634,13 @@ int raytracing_shape(t_all *all, t_3d_point direction)
 		t_3d_point vect = vec3(1, 1, 1);
 		color = somme_3d_point(produit_3d_point_par_cst(vect, amb), produit_3d_point_par_cst(vect, diff));
 		color = vec3(sqrtf(color.x), sqrtf(color.y), sqrtf(color.z));
+		if (all->cylinder.in == 1)
 		color = color_multi(color, all->cylinder.color); 
+		else if (all->sphere.in == 1)
+		color = color_multi(color, all->sphere.color); 
+		else if (all->plan.in == 1)
+		color = color_multi(color, all->plan.color); 
+		//printf ("OUT %d %d %d \n", all->plan.in, all->cylinder.in, all->sphere.in);
 		return (rgb_to_int(color.x, color.y, color.z));
 	}
 	return (0.f);
@@ -883,9 +899,9 @@ int main()
 	//plan.light.position = (t_3d_point){0, 0, 1};
 
 
-	plan.position = vec3(0.f, -0.2, 0.f);
-	plan.normal = vec3(0.f, 1.f, 1.f);
-	plan.color = (t_rgb){255,153,255};
+	plan.position = vec3(0.f, -0.4, 0.f);
+	plan.normal = vec3(0.f, 1.f, 0.f);
+	plan.color = (t_rgb){0,0,255};
 	plan.in = 0;
 
 	/*			CAMERA			*/
@@ -901,7 +917,7 @@ int main()
 	/*			CYLINDER			*/
 
 
-	cylinder.color = (t_rgb){255, 255, 255};
+	cylinder.color = (t_rgb){0, 255, 0};
 	cylinder.position = (t_3d_point){0, 0, 0};
 	cylinder.rayon = 0.3f;
 	cylinder.hauteur = 1;
