@@ -102,8 +102,9 @@ typedef	struct	s_plan
 	t_3d_point 	normal;
 	t_rgb		color;
 	t_light		light;
-	float	centre_screen_x;
-	float	centre_screen_y;
+	float		centre_screen_x;
+	float		centre_screen_y;
+	int			in;
 }				t_plan;
 
 typedef struct	s_cercle
@@ -129,6 +130,7 @@ typedef struct s_sphere
 	t_3d_point	centre;
 	float		rayon;
 	t_rgb		color;
+	int			in;
 }				t_sphere;
 
 typedef struct s_camera
@@ -146,6 +148,7 @@ typedef struct s_cylinder
     float		rayon;
 	t_3d_point	top;
 	t_3d_point	bottom;
+	int			in;
     float		hauteur;     
 }				t_cylinder;
 
@@ -155,7 +158,7 @@ typedef struct s_all
 	t_plan		plan;
 	t_cercle	cercle;
 	t_data		image;
-	t_sphere	sphere[3];
+	t_sphere	sphere;
 	t_cylinder	cylinder;
 	t_camera	camera;
 }			t_all;
@@ -529,29 +532,6 @@ int is_shadow(t_plan plan, t_sphere sphere, t_3d_point direction, float *angle)
 	return (0);
 }
 
-//int intersect_cy(t_camera camera, t_3d_point direction, t_cylinder cylinder, t_intersection *intersection)
-//{
-//	int inside;
-//	t_3d_point l = soustraction_3d_point(camera.position, cylinder.position);
-//	float a = pow (direction.x, 2) + pow (direction.z, 2);
-//	float b = 2.f * (l.x * direction.x + l.z * direction.z);
-//	float c = pow (l.x, 2) + pow (l.z, 2) - pow (cylinder.rayon, 2);
-//	if (equation_deuxieme_degre(a, b, c, intersection))
-//	{
-//		float t = intersection->min;
-//		t_3d_point phit = somme_3d_point(camera.position, produit_3d_point_par_cst(direction, t));
-//		float y = phit.y - cylinder.position.y;
-//		inside = !(y < 0 || y > cylinder.hauteur);
-//		if (!inside)
-//			return (0);
-//		intersection->normal_vect = vec3(phit.x - cylinder.position.x, 0 ,phit.z - cylinder.position.z);
-//		intersection->normal_vect = vecteur_normalise(intersection->normal_vect);
-//		return (1);
-//	}
-//	return (0.f);
-//}
-
-
 float the_cylindre(t_3d_point p, t_3d_point a, t_3d_point b, float r)
 {
 	t_3d_point ba = soustraction_3d_point(b, a);
@@ -567,21 +547,6 @@ float the_cylindre(t_3d_point p, t_3d_point a, t_3d_point b, float r)
 	return (sign * sqrtf (fabs (d)) / baba);
 }
 
-
-//float the_cylindre(t_3d_point p, t_3d_point a, t_3d_point b, float r)
-//{
-//	t_3d_point ab = soustraction_3d_point(b, a);
-//	t_3d_point ap = soustraction_3d_point(p, a);
-//	float t = dot (ab, ap) / dot (ab, ab);
-//	t_3d_point c = somme_3d_point (a, produit_3d_point_par_cst(b, t));
-//	float x = length(soustraction_3d_point(p, c)) - r;
-//	float y = (fabsf(t - 0.5f) - 0.5f) * length(ab);
-//	t_2d_point vec2 = (t_2d_point){fmax (x, 0.f), fmax(y, 0.f)};
-//	float e = length2d(vec2);
-//	float i = fmin (fmax (x, y), 0.f);
-//	return e + i;
-//}
-
 float sphere(t_3d_point p, float s)
 {
   return length(p)-s;
@@ -592,19 +557,16 @@ float plane(t_3d_point p, t_3d_point n, float h)
 	return dot(p,n) + h;
 }
 
-float map (t_3d_point pos, t_cylinder cylind, t_plan plan)
+float map (t_3d_point pos, t_all *all)
 {
 	float re;
-	//t_3d_point a = vec3(0.5,0.0,0.0); // middle point on topper cercle 
-	//t_3d_point b = vec3(-0.5,0,0); // middle point on lower cercle
-	float cy = the_cylindre(pos, cylind.top, cylind.bottom, cylind.rayon);
-	float sp = sphere(soustraction_3d_point(pos, vec3 (0.1, 0.1, 0.1)), 0.4f);
-    float pl = plane(soustraction_3d_point(pos, vec3 (-0.2, -0.2, -0.2)), vec3 (0.f,1.f,0.f), 0.f);
+
+	float cy = the_cylindre(pos, all->cylinder.top, all->cylinder.bottom, all->cylinder.rayon);
+	float sp = sphere(soustraction_3d_point(pos, all->sphere.centre), all->sphere.rayon);
+    float pl = plane(soustraction_3d_point(pos, vec3 (-0.1, -0.1, -0.1)), vec3 (0.f,1.f,0.f), 0.f);
 	re = cy;
-//	printf ("%f \n", cy);
 	re = fmin(cy, sp);
 	re = fmin(re ,pl);
-	//printf ("%f \n", re);
 	return (re);
 }
 
@@ -613,17 +575,17 @@ t_3d_point color_multi(t_3d_point a, t_rgb color)
 	return (vec3(a.x * color.r, a.y * color.b, a.z * color.g));
 }
 
-t_3d_point calcul_normal(t_3d_point pos, t_cylinder cylindre, t_plan plan)
+t_3d_point calcul_normal(t_3d_point pos, t_all *all)
 {
 	t_2d_point e = (t_2d_point){0.5f, -0.5f};
 	t_3d_point v1 = vec3 (e.x, e.y, e.y);
 	t_3d_point v2 = vec3 (e.y, e.y, e.x);
 	t_3d_point v3 = vec3 (e.y, e.x, e.y);
 	t_3d_point v4 = vec3 (e.x, e.x, e.x);
-	t_3d_point a1= produit_3d_point_par_cst(v1 , map(somme_3d_point(pos, produit_3d_point_par_cst(v1, EPSILON)), cylindre, plan));
-	t_3d_point a2= produit_3d_point_par_cst(v2 , map(somme_3d_point(pos, produit_3d_point_par_cst(v2, EPSILON)), cylindre, plan));
-	t_3d_point a3= produit_3d_point_par_cst(v3 , map(somme_3d_point(pos, produit_3d_point_par_cst(v3, EPSILON)), cylindre, plan));
-	t_3d_point a4= produit_3d_point_par_cst(v4 , map(somme_3d_point(pos, produit_3d_point_par_cst(v4, EPSILON)), cylindre, plan));
+	t_3d_point a1= produit_3d_point_par_cst(v1 , map(somme_3d_point(pos, produit_3d_point_par_cst(v1, EPSILON)), all));
+	t_3d_point a2= produit_3d_point_par_cst(v2 , map(somme_3d_point(pos, produit_3d_point_par_cst(v2, EPSILON)), all));
+	t_3d_point a3= produit_3d_point_par_cst(v3 , map(somme_3d_point(pos, produit_3d_point_par_cst(v3, EPSILON)), all));
+	t_3d_point a4= produit_3d_point_par_cst(v4 , map(somme_3d_point(pos, produit_3d_point_par_cst(v4, EPSILON)), all));
 	t_3d_point re = vecteur_normalise(somme_3d_point(somme_3d_point(a1, a2), somme_3d_point(a3, a4)));
 	return (re);
 }
@@ -631,7 +593,7 @@ t_3d_point calcul_normal(t_3d_point pos, t_cylinder cylindre, t_plan plan)
 
 
 
-int raytracing_cy(t_camera camera, t_3d_point direction, t_cylinder cylinder, t_plan plan)
+int raytracing_shape(t_all *all, t_3d_point direction)
 {
 	t_3d_point		color;
 	float			t;
@@ -640,12 +602,13 @@ int raytracing_cy(t_camera camera, t_3d_point direction, t_cylinder cylinder, t_
 	float			diff;
 	float			amb; 
 	int				i;
+
 	i = 0;
 	t = 0;
 	while (i < ITERATION)
 	{
-		pos = somme_3d_point(camera.direction, produit_3d_point_par_cst(direction, t));
-		h = map (pos, cylinder, plan);
+		pos = somme_3d_point(all->camera.direction, produit_3d_point_par_cst(direction, t));
+		h = map (pos, all);
 		if (t > T_MAX || h < 1e-4)
 			break;
 		t += h;
@@ -654,62 +617,45 @@ int raytracing_cy(t_camera camera, t_3d_point direction, t_cylinder cylinder, t_
 	color = vec3(0,0,0);
 	if (t <= T_MAX)
 	{
-		pos = somme_3d_point(camera.direction, produit_3d_point_par_cst(direction, t));
-		t_3d_point norm = calcul_normal(pos, cylinder, plan);
+		pos = somme_3d_point(all->camera.direction, produit_3d_point_par_cst(direction, t));
+		t_3d_point norm = calcul_normal(pos, all);
 		diff = clamp(dot (norm, vec3 (0, 1, 0)), 0.f, 1.f);
-		amb = 0.5f + 0.5f  * dot (norm, plan.light.direction);
+		amb = 0.5f + 0.5f  * dot (norm, all->plan.light.direction);
 		t_3d_point vect = vec3(1, 1, 1);
 		color = somme_3d_point(produit_3d_point_par_cst(vect, amb), produit_3d_point_par_cst(vect, diff));
 		color = vec3(sqrtf(color.x), sqrtf(color.y), sqrtf(color.z));
-		color = color_multi(color, cylinder.color); 
+		color = color_multi(color, all->cylinder.color); 
 		return (rgb_to_int(color.x, color.y, color.z));
 	}
 	return (0.f);
 }
 
-void draw_cylinder(t_mlx mlx, t_plan plan, t_cylinder cylinder, t_data *image, t_camera camera)
+void draw_shape(t_all *all, t_data *image)
 {
 	t_3d_point	direction;
 	float		half_fov;
-	float		ratio;
 	float		pixel_color;
-	int			x;
-	int			y;
 	float		ndc_x;
-	//t_3d_point	ww;
 	float		ndc_y;
 
-	ratio = RATIO;
-	//ww = soustraction_3d_point(camera.position, camera.direction);
-	half_fov = tan (deg_to_rad(camera.fov / 2.0));
-	plan.x = 0;
-	while (plan.x < HEIGHT)
+	half_fov = tan (deg_to_rad(all->camera.fov / 2.0));
+	all->plan.x = 0;
+	while (all->plan.x < HEIGHT)
 	{
-		plan.y = 0;
-		while (plan.y < WIDTH)
+		all->plan.y = 0;
+		while (all->plan.y < WIDTH)
 		{
-			//point.x = (plan.x - plan.centre_screen_x) / 1088.f;
-			//point.y = (plan.y - plan.centre_screen_y) / 1088.f;
-			//input = project_to_3d(point);
-		//	if (inside_sphere(input, sphere))
-			{
-				x = plan.y;
-				y = plan.x;
-				ndc_x = ((2.0f * (x + 0.5f) / WIDTH) - 1.0f) * ratio;
-				ndc_y =  1.0f - 2.0f * (y + 0.5f) / HEIGHT;
-				direction.x = ndc_x * half_fov;
-				direction.y = ndc_y * half_fov;
-				direction.z = 1.f;
-				//printf ("%f \n", camera.position.z);
-				direction = soustraction_3d_point(direction, camera.position);
-				direction = vecteur_normalise(direction);
-				pixel_color = raytracing_cy(camera, direction, cylinder, plan);
-				if (pixel_color)
-					my_mlx_pixel_put(image , x, y , pixel_color);
-			}
-			plan.y++;
+			ndc_x = ((2.0f * (all->plan.y + 0.5f) / WIDTH) - 1.0f) * RATIO;
+			ndc_y =  1.0f - 2.0f * (all->plan.x + 0.5f) / HEIGHT;
+			direction = vec3 (ndc_x * half_fov, ndc_y * half_fov, 1.f);
+			direction = soustraction_3d_point(direction, all->camera.position);
+			direction = vecteur_normalise(direction);
+			pixel_color = raytracing_shape(all, direction);
+			if (pixel_color)
+				my_mlx_pixel_put(image , all->plan.y, all->plan.x , pixel_color);
+			all->plan.y++;
 		}
-		plan.x++;
+		all->plan.x++;
 	}
 }
 float raytracing(t_camera camera, t_3d_point direction, t_sphere sphere, t_plan plan)
@@ -829,8 +775,6 @@ void stay_a_color(int *color)
 		(*color) = 0;
 }
 
-
-
 int rgb_to_int(int r, int g, int b) 
 {
 	int color;
@@ -887,7 +831,7 @@ int moving_light(t_all *all)
 //	all->cylinder.normal = (t_3d_point){0.f - a,0.f,0.f + a};
 //	cylindre_bottom(&all->cylinder);
 	mlx_clear_window(all->mlx.init, all->mlx.win);
-	draw_cylinder(all->mlx, all->plan, all->cylinder, &all->image, all->camera);
+	//draw_shape(all->mlx, all->plan, all->cylinder, &all->image, all->camera);
 //	draw_sphere(all->mlx, all->plan, all->sphere[0], &all->image, all->camera);
 //	draw_sphere(all->mlx, all->plan, all->sphere[1], &all->image, all->camera);
 //	draw_sphere(all->mlx, all->plan, all->sphere[2], &all->image, all->camera);
@@ -942,6 +886,7 @@ int main()
 	plan.position = vec3(0.f, -0.2, 0.f);
 	plan.normal = vec3(0.f, 1.f, 1.f);
 	plan.color = (t_rgb){255,153,255};
+	plan.in = 0;
 
 	/*			CAMERA			*/
 
@@ -960,6 +905,7 @@ int main()
 	cylinder.position = (t_3d_point){0, 0, 0};
 	cylinder.rayon = 0.3f;
 	cylinder.hauteur = 1;
+	cylinder.in = 0;
 	cylinder.normal = (t_3d_point){0.8, 0.2, 1};
 	cylindre_bottom(&cylinder);
 	//point_printer(cylinder.top);
@@ -969,7 +915,6 @@ int main()
 	
 	
 	
-	draw_cylinder(mlx, plan, cylinder, &image, camera);
 
 
 
@@ -998,10 +943,34 @@ int main()
 	sphere.color.g = COLOR_G; 
 	sphere.color.b = COLOR_B; 
 	sphere.centre.x = 0.f;
-	sphere.centre.y = -0.3f;
+	sphere.centre.y = 0.3f;
 	sphere.centre.z = 0.f;
-	sphere.rayon = 0.6f;
-	all.sphere[0] = sphere;
+	sphere.rayon = 0.4f;
+	sphere.in = 0;
+
+
+
+
+
+
+
+	all.mlx = mlx;
+	all.plan = plan;
+	all.cercle = cercle;
+	all.sphere = sphere;
+	all.image = image;
+	all.camera = camera;
+	all.cylinder = cylinder;
+
+
+
+
+
+
+	
+	draw_shape(&all, &image);
+
+
 //	draw_color(mlx, sphere.color, &image);
 	//draw_plane(mlx, plan, camera, &image);
 //	draw_sphere_shadow(mlx, plan, sphere, camera, &image);
@@ -1023,15 +992,11 @@ int main()
 //	sphere.color.r = 0;
 //	draw_sphere(mlx, plan, sphere, &image, camera);
 	/*	EVERYTHING IN ONE STRUCT	*/
-	all.mlx = mlx;
-	all.plan = plan;
-	all.cercle = cercle;
-	all.image = image;
+
 //	all.sphere[2] = sphere;
-	all.camera = camera;
-	all.cylinder = cylinder;
+
 		/*		moving time		*/
- 	 mlx_loop_hook(mlx.init, moving_light, &all);
+ //	 mlx_loop_hook(mlx.init, moving_light, &all);
 
 	/****************************/
 
