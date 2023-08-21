@@ -576,7 +576,6 @@ float map (t_3d_point pos, t_all *all)
 		all->cylinder.in = 1;
 	else if (re == sp)
 		all->sphere.in = 1;
-	//printf ("IN %d %d %d \n", all->plan.in, all->cylinder.in, all->sphere.in);
 	return (re);
 }
 
@@ -600,7 +599,28 @@ t_3d_point calcul_normal(t_3d_point pos, t_all *all)
 	return (re);
 }
 
+float shadow(t_3d_point pos, t_all *all, float mint, float tmax)
+{
+	float re;
+	float t;
+	float s;
+	float h;
+	int i;
 
+	i = 0;
+	re = 1.0;
+	t = mint;
+	while (i < 25)
+	{
+		h = map(somme_3d_point(pos,  produit_3d_point_par_cst(all->plan.light.direction, t)), all);
+		s = clamp(10.0 * h / t,0.0,1.0);
+		re = fmin(re, s); 
+		t += clamp(h, 0.01, 0.2);
+		if(re < 0.004 || t > tmax)
+			break;
+	}
+	return (re);
+}
 
 
 int raytracing_shape(t_all *all, t_3d_point direction)
@@ -629,18 +649,18 @@ int raytracing_shape(t_all *all, t_3d_point direction)
 	{
 		pos = somme_3d_point(all->camera.direction, produit_3d_point_par_cst(direction, t));
 		t_3d_point norm = calcul_normal(pos, all);
-		diff = clamp(dot (norm, vec3 (0, 1, 0)), 0.f, 1.f);
+		diff = clamp(dot (norm, vec3 (0.5,0.5,0.5)), 0.f, 1.f);
+		diff *= shadow (pos, all, 0.02, 1.5f);
 		amb = 0.5f + 0.5f  * dot (norm, all->plan.light.direction);
 		t_3d_point vect = vec3(1, 1, 1);
 		color = somme_3d_point(produit_3d_point_par_cst(vect, amb), produit_3d_point_par_cst(vect, diff));
 		color = vec3(sqrtf(color.x), sqrtf(color.y), sqrtf(color.z));
-		if (all->cylinder.in == 1)
-		color = color_multi(color, all->cylinder.color); 
-		else if (all->sphere.in == 1)
-		color = color_multi(color, all->sphere.color); 
-		else if (all->plan.in == 1)
+//		if (all->cylinder.in == 1)
+//			color = color_multi(color, all->cylinder.color); 
+//		else if (all->sphere.in == 1)
+//			color = color_multi(color, all->sphere.color); 
+//		else if (all->plan.in == 1)
 		color = color_multi(color, all->plan.color); 
-		//printf ("OUT %d %d %d \n", all->plan.in, all->cylinder.in, all->sphere.in);
 		return (rgb_to_int(color.x, color.y, color.z));
 	}
 	return (0.f);
@@ -894,14 +914,14 @@ int main()
 	plan.z = 1;
 	plan.centre_screen_x = HEIGHT / 2.f;
 	plan.centre_screen_y = WIDTH / 2.f;
-	plan.light.direction = vecteur_normalise(vec3(1.0, 0.0, 1.f));
+	plan.light.direction = vecteur_normalise(vec3(0.1f, 0.1, 0.1f));
 	plan.light.ambient = 0.8;
 	//plan.light.position = (t_3d_point){0, 0, 1};
 
 
-	plan.position = vec3(0.f, -0.4, 0.f);
+	plan.position = vec3(0.f, -0.2, 0.f);
 	plan.normal = vec3(0.f, 1.f, 0.f);
-	plan.color = (t_rgb){0,0,255};
+	plan.color = (t_rgb){255,255,255};
 	plan.in = 0;
 
 	/*			CAMERA			*/
@@ -912,7 +932,7 @@ int main()
 	camera.direction.x = 0;
 	camera.direction.y = 0;
 	camera.direction.z = -1.1f;
-	camera.fov = 100;
+	camera.fov = 140;
 
 	/*			CYLINDER			*/
 
@@ -959,9 +979,9 @@ int main()
 	sphere.color.g = COLOR_G; 
 	sphere.color.b = COLOR_B; 
 	sphere.centre.x = 0.f;
-	sphere.centre.y = 0.3f;
-	sphere.centre.z = 0.f;
-	sphere.rayon = 0.4f;
+	sphere.centre.y = 0.2f;
+	sphere.centre.z = -0.7f;
+	sphere.rayon = 0.2f;
 	sphere.in = 0;
 
 
