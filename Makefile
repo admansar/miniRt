@@ -31,8 +31,8 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(libft):
-	make -C libft
 	@echo "\033[0m"
+	make -C libft
 
 $(lib_point):
 	make -C lib_point
@@ -40,11 +40,12 @@ $(lib_point):
 
 $(NAME): $(OBJ) $(libft) $(lib_point)
 	$(Rt)
-	@echo "\033[1;36m"
+	@echo -n "\033[1;36m"
 	$(CC) $(MLX_FLAGS) $(CFLAGS) $(OBJ) $(libft) $(lib_point) -o $(NAME)
 	@echo "\033[0m"
 
 %.o: %.c
+	@echo "\033[0m"
 	$(CC) $(CFLAGS) -c $< -o $@
 
 bold : 
@@ -56,6 +57,7 @@ clean:
 	rm -rf $(OBJ)
 
 fclean: clean
+	@echo "\033[0;31m"
 	make -C libft fclean
 	make -C lib_point fclean
 	rm -rf $(NAME)

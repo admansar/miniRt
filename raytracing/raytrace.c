@@ -6,7 +6,7 @@
 /*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/28 17:11:49 by admansar          #+#    #+#             */
-/*   Updated: 2023/08/28 17:11:57 by admansar         ###   ########.fr       */
+/*   Updated: 2023/08/28 18:39:31 by admansar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	draw_shape(t_all *all, t_data *image)
 		while (++all->plan->y < WIDTH)
 		{
 			ndc_x = ((2.0f * (all->plan->y + 0.5f) / WIDTH) - 1.0f) 
-				* (float)WIDTH / HEIGHT;
+				* (float)WIDTH / (float)HEIGHT;
 			ndc_y = 1.0f - 2.0f * (all->plan->x + 0.5f) / HEIGHT;
 			direction = vec3(ndc_x * half_fov, ndc_y * half_fov, 5.f);
 			direction = soustraction_3d_point(direction, all->camera.position);
@@ -89,5 +89,6 @@ void	draw_shape(t_all *all, t_data *image)
 			if (pixel_col)
 				my_mlx_pixel_put(image, all->plan->y, all->plan->x, pixel_col);
 		}
+		printf("\033[H\033[Jloading[ %.1f%% ]\n", all->plan->x / HEIGHT * 100.f);
 	}
 }
