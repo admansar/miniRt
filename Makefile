@@ -2,11 +2,15 @@ NAME = minirt
 
 libft = libft/libft.a
 
+lib_point = lib_point/libpoint.a
+
 CC = cc
 
 MLX_FLAGS = -lmlx -framework OpenGL -framework AppKit -lm
 
 CFLAGS = -O3 -Wall -Wextra -Werror #-fsanitize=address -g
+
+RAY_SRC = $(addprefix raytracing/, mlx_func.c utils.c cylindre.c free.c sphere.c plan.c capsule.c camera.c map.c raytrace.c)
 
 SRC = parcing.c\
 	gnl/get_next_line.c\
@@ -18,6 +22,7 @@ SRC = parcing.c\
 	check_validation.c\
 	minirt.c\
 	print.c\
+	$(RAY_SRC)
 
 OBJ = $(SRC:.c=.o)
 
@@ -27,10 +32,14 @@ $(libft):
 	make -C libft
 	@echo "\033[0m"
 
-$(NAME): $(OBJ) $(libft)
+$(lib_point):
+	make -C lib_point
+
+
+$(NAME): $(OBJ) $(libft) $(lib_point)
 	$(Rt)
 	@echo "\033[1;36m"
-	$(CC) $(MLX_FLAGS) $(CFLAGS) $(OBJ) $(libft) -o $(NAME)
+	$(CC) $(MLX_FLAGS) $(CFLAGS) $(OBJ) $(libft) $(lib_point) -o $(NAME)
 	@echo "\033[0m"
 
 %.o: %.c
@@ -41,10 +50,12 @@ bold :
 
 clean:
 	make -C libft clean
+	make -C lib_point clean
 	rm -rf $(OBJ)
 
 fclean: clean
 	make -C libft fclean
+	make -C lib_point fclean
 	rm -rf $(NAME)
 
 re: fclean  all
