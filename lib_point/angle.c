@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   angle.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/28 17:06:02 by admansar          #+#    #+#             */
+/*   Updated: 2023/08/28 17:06:07 by admansar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lib_point.h"
 #include <stdio.h>
 
@@ -47,4 +59,3 @@ float	angle_between(t_3d_point u, t_3d_point v)
 	costheta = dotproduct / (normu * normv);
 	return (acos(costheta));
 }
-

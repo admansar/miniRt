@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/28 17:11:43 by admansar          #+#    #+#             */
+/*   Updated: 2023/08/28 17:11:56 by admansar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minirt.h"
 
 void	checking_shape(t_3d_point pos, t_all *all, int i, float *re)
@@ -82,8 +94,8 @@ float	calc_shadow(t_3d_point pos, t_all all, float mint, float tmax)
 	while (i < 25)
 	{
 		h = map(somme_3d_point(pos,
-					produit_3d_point_par_cst(all.plan->light.direction, t)),
-				&all);
+					produit_3d_point_par_cst(all.plan->light.direction,
+						t)), &all);
 		s = clamp(10.0 * h / t, 0.0, 1.0);
 		re = fmin(re, s);
 		t += clamp(h, 0.01, 0.2);
@@ -92,5 +104,3 @@ float	calc_shadow(t_3d_point pos, t_all all, float mint, float tmax)
 	}
 	return (re);
 }
-
-

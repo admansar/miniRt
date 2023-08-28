@@ -8,20 +8,22 @@ CC = cc
 
 MLX_FLAGS = -lmlx -framework OpenGL -framework AppKit -lm
 
-CFLAGS = -O3 -Wall -Wextra -Werror #-fsanitize=address -g
+CFLAGS = -O3 -Wall -Wextra -Werror
+
 
 RAY_SRC = $(addprefix raytracing/, mlx_func.c utils.c cylindre.c free.c sphere.c plan.c capsule.c camera.c map.c raytrace.c)
 
-SRC = parcing.c\
-	gnl/get_next_line.c\
+SRC = gnl/get_next_line.c\
 	gnl/get_next_line_utils.c\
-	ft_atof.c\
-	minirt_split.c\
-	check_shapes.c\
-	check_shapes_sequel.c\
-	check_validation.c\
+	parsing/check_file_rt.c\
+	parsing/check_shapes_sequel_two.c\
+	parsing/check_shapes_sequel.c\
+	parsing/parsing.c\
+	parsing/ft_atof.c\
+	parsing/minirt_split.c\
+	parsing/check_shapes.c\
+	parsing/check_validation.c\
 	minirt.c\
-	print.c\
 	$(RAY_SRC)
 
 OBJ = $(SRC:.c=.o)

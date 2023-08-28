@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   capsule.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/28 17:11:35 by admansar          #+#    #+#             */
+/*   Updated: 2023/08/28 17:11:56 by admansar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minirt.h"
 
 float	sdcapsule(t_3d_point p, t_3d_point a, t_3d_point b, float r)
@@ -32,5 +44,3 @@ t_capsule	*init_capsule(t_shapes *shapes)
 	}
 	return (capsule);
 }
-
-

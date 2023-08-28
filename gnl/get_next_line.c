@@ -11,9 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 int	back_slash_len(char *buffer)
 {
@@ -65,8 +62,6 @@ char	*check_r(char *stc, char *r, char *buffer, int fd)
 	}
 	return (r);
 }
-
-#include <stdio.h>
 
 char	*get_next_line(int fd)
 {

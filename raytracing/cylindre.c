@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cylindre.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/28 17:11:36 by admansar          #+#    #+#             */
+/*   Updated: 2023/08/28 17:11:56 by admansar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minirt.h"
 
 float	get_cy_dist(t_define_cylindre *cylinder)
@@ -26,10 +38,9 @@ float	the_cylindre(t_3d_point p, t_3d_point a, t_3d_point b, float r)
 	cylinder.pa = soustraction_3d_point(p, a);
 	cylinder.baba = dot(cylinder.ba, cylinder.ba);
 	cylinder.paba = dot(cylinder.pa, cylinder.ba);
-	cylinder.x = length(soustraction_3d_point
-			(produit_3d_point_par_cst(cylinder.pa,
-					cylinder.baba), produit_3d_point_par_cst(cylinder.ba,
-					cylinder.paba))) - r * cylinder.baba;
+	cylinder.x = length(soustraction_3d_point(produit_3d_point_par_cst
+				(cylinder.pa, cylinder.baba), produit_3d_point_par_cst(
+					cylinder.ba, cylinder.paba))) - r * cylinder.baba;
 	cylinder.y = fabs(cylinder.paba - cylinder.baba * 0.5) - cylinder.baba
 		* 0.5;
 	cylinder.x2 = cylinder.x * cylinder.x;
@@ -45,11 +56,11 @@ float	the_cylindre(t_3d_point p, t_3d_point a, t_3d_point b, float r)
 void	cylindre_bottom(t_cylinder *cylinder)
 {
 	cylinder->top = somme_3d_point(cylinder->position,
-			produit_3d_point_par_cst(cylinder->normal, 0.5f
-				* cylinder->hauteur));
+			produit_3d_point_par_cst(cylinder->normal,
+				0.5f * cylinder->hauteur));
 	cylinder->bottom = soustraction_3d_point(cylinder->position,
-			produit_3d_point_par_cst(cylinder->normal, 0.5f
-				* cylinder->hauteur));
+			produit_3d_point_par_cst(cylinder->normal,
+				0.5f * cylinder->hauteur));
 }
 
 t_cylinder	*init_cylinder(t_shapes *shapes)

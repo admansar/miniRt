@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   3d_operation2.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/28 17:05:53 by admansar          #+#    #+#             */
+/*   Updated: 2023/08/28 17:06:07 by admansar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lib_point.h"
 
 t_3d_point	cross(t_3d_point a, t_3d_point b)
@@ -5,7 +17,6 @@ t_3d_point	cross(t_3d_point a, t_3d_point b)
 	return (vec3((a.y * b.z) - (a.z * b.y), (a.z * b.x) - (a.x * b.z), (a.x
 				* b.y) - (a.y * b.x)));
 }
-
 
 float	distance_3d_point(t_3d_point a, t_3d_point b)
 {

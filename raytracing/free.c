@@ -1,25 +1,16 @@
-#include "../minirt.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/28 17:11:42 by admansar          #+#    #+#             */
+/*   Updated: 2023/08/28 17:11:56 by admansar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void	free_shapes(t_shapes *shapes)
-{
-	if (shapes->cylinder)
-	{
-		free(shapes->cylinder);
-		shapes->cylinder = NULL;
-	}
-	if (shapes->sphere)
-	{
-		shapes->sphere = NULL;
-		free(shapes->sphere);
-	}
-	if (shapes->plane)
-	{
-		shapes->plane = NULL;
-		free(shapes->plane);
-	}
-	if (shapes)
-		free(shapes);
-}
+#include "../minirt.h"
 
 void	free_all(t_all *all)
 {
