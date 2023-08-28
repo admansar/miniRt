@@ -6,7 +6,7 @@
 /*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/16 19:32:46 by selkhadr          #+#    #+#             */
-/*   Updated: 2023/08/23 19:19:48 by admansar         ###   ########.fr       */
+/*   Updated: 2023/08/27 16:53:12 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,42 @@ int	check_file(int ac, char **av, t_shapes *shapes)
 	int	fd;
 
 	if (ac != 2)
-		print_error(NULL, NULL, "file name required", shapes);
+		print_error(NULL, NULL, "file name required\n", shapes);
 	len = ft_strlen(av[1]) - 3;
 	if (ft_strncmp(av[1] + len, ".rt", ft_strlen(av[1] + len)))
-		print_error(NULL, NULL, ".rt file required", shapes);
+		print_error(NULL, NULL, ".rt file requiredn\n", shapes);
 	fd = open(av[1], O_RDONLY);
 	if (fd == -1)
-		print_error(NULL, NULL, "here4", shapes);
+		print_error(NULL, NULL, "File descriptor error\n", shapes);
 	return (fd);
+}
+
+void	calcul_nmb_sequel(t_shapes *shapes, char **all, int n)
+{
+	char	**str;
+	char	**split;
+	int		i;
+
+	str = ft_split(*all, '\n');
+	i = 0;
+	while (str[i])
+	{
+		split = minirt_split(str[i]);
+		if (ft_strncmp(split[0], "cy", ft_strlen(split[0])) == 0)
+			shapes->nmb_cy++;
+		else if (ft_strncmp(split[0], "sp", ft_strlen(split[0])) == 0)
+			shapes->nmb_sp++;
+		else if (ft_strncmp(split[0], "pl", ft_strlen(split[0])) == 0)
+			shapes->nmb_plane++;
+		else if (ft_strncmp(split[0], "cp", ft_strlen(split[0])) == 0)
+			shapes->nmb_capsule++;
+		free_double_array(split);
+		i++;
+	}
+	shapes->cylinder = ft_calloc(shapes->nmb_cy + 1, sizeof(t_cylinder_info));
+	shapes->sphere = ft_calloc(shapes->nmb_sp + 1, sizeof(t_sphere_info));
+	shapes->plane = ft_calloc(shapes->nmb_plane + 1, sizeof(t_plane_info));
+	shapes->capsule = ft_calloc(n, sizeof(t_capsule_info));
 }
 
 void	calcul_nmbr_of_shapes(char **all, t_shapes *shapes)
@@ -49,24 +77,16 @@ void	calcul_nmbr_of_shapes(char **all, t_shapes *shapes)
 	char	**split;
 	char	**tmp;
 	int		i;
+	int		n;
 
 	i = 0;
+	n = shapes->nmb_capsule + 1;
+	calcul_nmb_sequel(shapes, all, n);
+	shapes->cylinder->nmb = 0;
+	shapes->capsule->nmb = 0;
+	shapes->plane->nmb = 0;
+	shapes->sphere->nmb = 0;
 	tmp = ft_split(*all, '\n');
-	while (tmp[i])
-	{
-		split = minirt_split(tmp[i]);
-		if (ft_strncmp(split[0], "cy", ft_strlen(split[0])) == 0)
-			shapes->nmb_cy++;
-		else if (ft_strncmp(split[0], "sp", ft_strlen(split[0])) == 0)
-			shapes->nmb_sp++;
-		else if (ft_strncmp(split[0], "pl", ft_strlen(split[0])) == 0)
-			shapes->nmb_plane++;
-		free_double_array(split);
-		i++;
-	}
-	shapes->cylinder =ft_calloc(shapes->nmb_cy + 1, sizeof(t_cylinder_info));
-	shapes->sphere = ft_calloc(shapes->nmb_sp + 1, sizeof(t_sphere_info));
-	shapes->plane = ft_calloc(shapes->nmb_plane + 1, sizeof(t_plane_info));
 	i = 0;
 	while (tmp[i])
 	{
@@ -75,10 +95,13 @@ void	calcul_nmbr_of_shapes(char **all, t_shapes *shapes)
 		free_double_array(split);
 		i++;
 	}
+	n = shapes->ambient.nmb;
+	if (n != 1 || shapes->camera.nmb != 1 || shapes->light.nmb != 1)
+		print_error(NULL, NULL, "", shapes);
 	free_double_array(tmp);
 }
 
-int help(void)
+int	help(void)
 {
 	ft_putstr_fd("\033[0;31mError, no file added as a argument or the file is not a .rt type\n", 2);
 	return (1);
@@ -107,29 +130,21 @@ int	ft_strncmp_dual(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
-
-void init_shape(t_shapes *shapes)
+void	init_shape(t_shapes *shapes)
 {
 	shapes->cylinder = NULL;
 	shapes->sphere = NULL;
 	shapes->plane = NULL;
+	shapes->capsule = NULL;
 }
 
-
-int	main(int ac, char **av)
+char	*read_from_file(t_shapes *shapes, int fd)
 {
-	char			*gnl;
-	int				fd;
-	t_shapes		*shapes;
-	char			*all;
-	char			*tmp;
+	char	*gnl;
+	char	*all;
+	char	*tmp;
 
-	if (ac != 2 || (ac == 2 && ft_strncmp_dual(av[1], ".rt", 4)))
-		return (help());
 	all = NULL;
-	shapes = malloc(sizeof(t_shapes));
-	init_shape(shapes);
-	fd = check_file(ac, av, shapes);
 	gnl = get_next_line(fd);
 	initiaize_numbers_of_shapes(shapes);
 	while (gnl)
@@ -149,7 +164,22 @@ int	main(int ac, char **av)
 		gnl = get_next_line(fd);
 	}
 	free (gnl);
-	calcul_nmbr_of_shapes(&(all), shapes);
+	return (all);
+}
+
+int	main(int ac, char **av)
+{
+	int				fd;
+	t_shapes		*shapes;
+	char			*str;
+
+	if (ac != 2 || (ac == 2 && ft_strncmp_dual(av[1], ".rt", 4)))
+		return (help());
+	shapes = malloc(sizeof(t_shapes));
+	init_shape(shapes);
+	fd = check_file(ac, av, shapes);
+	str = read_from_file(shapes, fd);
+	calcul_nmbr_of_shapes(&(str), shapes);
 	minirt(shapes);
 	free_shapes(shapes);
 	return (0);

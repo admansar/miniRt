@@ -6,7 +6,7 @@ CC = cc
 
 MLX_FLAGS = -lmlx -framework OpenGL -framework AppKit -lm
 
-CFLAGS = -Wall -Wextra -Werror -O3 #-fsanitize=address -g 
+CFLAGS = -O3 -Wall -Wextra -Werror #-fsanitize=address -g
 
 SRC = parcing.c\
 	gnl/get_next_line.c\
@@ -16,7 +16,8 @@ SRC = parcing.c\
 	check_shapes.c\
 	check_shapes_sequel.c\
 	check_validation.c\
-	minirt.c
+	minirt.c\
+	print.c\
 
 OBJ = $(SRC:.c=.o)
 
@@ -26,8 +27,7 @@ $(libft):
 	make -C libft
 	@echo "\033[0m"
 
-$(NAME):  $(OBJ) $(libft)
-	@echo "\033[1;37m"
+$(NAME): $(OBJ) $(libft)
 	$(Rt)
 	@echo "\033[1;36m"
 	$(CC) $(MLX_FLAGS) $(CFLAGS) $(OBJ) $(libft) -o $(NAME)
@@ -35,6 +35,9 @@ $(NAME):  $(OBJ) $(libft)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+bold : 
+	@echo "\033[1;37m"
 
 clean:
 	make -C libft clean

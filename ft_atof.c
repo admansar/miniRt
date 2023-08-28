@@ -6,7 +6,7 @@
 /*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 11:27:45 by selkhadr          #+#    #+#             */
-/*   Updated: 2023/08/21 23:18:50 by selkhadr         ###   ########.fr       */
+/*   Updated: 2023/08/27 15:47:13 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ double	_continue(int i, char *str, t_shapes *shapes)
 	else
 	{
 		if (str[i] != '\0' && str[i] != '\n')
-			print_error(NULL, NULL, "here5", shapes);
+			print_error(NULL, NULL, "not a valid nmb\n", shapes);
 	}
 	c = 1;
 	sa = 0;
@@ -35,8 +35,18 @@ double	_continue(int i, char *str, t_shapes *shapes)
 		i++;
 	}
 	if (!(str[i] >= 48 && str[i] <= 57) && str[i] && str[i] != '\n')
-		print_error(NULL, NULL, "here7", shapes);
+		print_error(NULL, NULL, "not a valid nmb\n", shapes);
 	return (sa);
+}
+
+void	ft_atof_sequel(char *str, int *i, int *d)
+{
+	while (str[*i] >= 48 && str[*i] <= 57 && str[*i])
+	{
+		*d = *d * 10;
+		*d = *d + str[*i] - 48;
+		(*i)++;
+	}
 }
 
 double	ft_atof(char *str, t_shapes *shapes)
@@ -60,12 +70,7 @@ double	ft_atof(char *str, t_shapes *shapes)
 	}
 	else if (str[i] == '+')
 		i++;
-	while (str[i] >= 48 && str[i] <= 57 && str[i])
-	{
-		d = d * 10;
-		d = d + str[i] - 48;
-		i++;
-	}
+	ft_atof_sequel(str, &i, &d);
 	sa = _continue(i, str, shapes);
 	return (count * (d + sa));
 }

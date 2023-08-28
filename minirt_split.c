@@ -6,7 +6,7 @@
 /*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 08:10:07 by selkhadr          #+#    #+#             */
-/*   Updated: 2023/08/18 11:29:29 by selkhadr         ###   ########.fr       */
+/*   Updated: 2023/08/27 15:36:53 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ static int	minirt_len(char *s)
 char	**minirt_split(char *s)
 {
 	char	**p;
-	int	k;
-	int	i;
-	int	l;
+	int		k;
+	int		i;
+	int		l;
 
 	i = 0;
 	l = 0;
@@ -54,7 +54,7 @@ char	**minirt_split(char *s)
 		k = i;
 		while (s[i] && (s[i] != ' ' && s[i] != '\t'))
 			i++;
-		if (l < minirt_len((char *)s	))
+		if (l < minirt_len((char *)s))
 			p[l++] = ft_substr(s, k, i - k);
 	}
 	p[l] = NULL;

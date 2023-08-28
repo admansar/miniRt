@@ -6,7 +6,7 @@
 /*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 15:25:16 by selkhadr          #+#    #+#             */
-/*   Updated: 2023/08/22 00:32:53 by selkhadr         ###   ########.fr       */
+/*   Updated: 2023/08/27 15:49:26 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	print_error(char **str, char **split, char *string, t_shapes *shapes)
 	free (shapes->cylinder);
 	free (shapes->sphere);
 	free (shapes->plane);
+	free (shapes->capsule);
 	write (2, "Error\n", 6);
 	ft_putstr_fd(string, 2);
 	free (shapes);
@@ -30,20 +31,20 @@ void	print_error(char **str, char **split, char *string, t_shapes *shapes)
 void	valid_float(char **str, char **split, float *nmb, t_shapes *shapes)
 {
 	if (str[1] != NULL)
-		print_error(str, split, "here0", shapes);
+		print_error(str, split, "not a valid float\n", shapes);
 	*nmb = ft_atof(str[0], shapes);
 }
 
-void	valid_coordonate(char **str, char **split, t_3d_point *cord, t_shapes *shapes)
+void	valid_coordonate(char **s1, char **s2, t_3d_point *cord, t_shapes *sp)
 {
-	if (str[3] != NULL)
-		print_error(str, split, "here3", shapes);
-	cord->x = ft_atof(str[0], shapes);
-	cord->y = ft_atof(str[1], shapes);
-	cord->z = ft_atof(str[2], shapes);
+	if (s1[3] != NULL)
+		print_error(s1, s2, "not a valid coordonate\n", sp);
+	cord->x = ft_atof(s1[0], sp);
+	cord->y = ft_atof(s1[1], sp);
+	cord->z = ft_atof(s1[2], sp);
 }
 
-void	color_range(char **str, char **split, t_3d_point color, t_shapes *shapes)
+void	color_range(char **s1, char **s2, t_3d_point color, t_shapes *shapes)
 {
 	int	a;
 	int	b;
@@ -53,18 +54,18 @@ void	color_range(char **str, char **split, t_3d_point color, t_shapes *shapes)
 	b = color.y;
 	c = color.z;
 	if (!(a >= 0 && a <= 255) || !(b >= 0 && b <= 255) || !(c >= 0 && c <= 255))
-		print_error(str, split, "color_range", shapes);
+		print_error(s1, s2, "color_range\n", shapes);
 }
 
-void	valid_normalized_vect(char **str, char **split, t_3d_point vect, t_shapes *shapes)
+void	valid_normalized_vect(char **s1, char **s2, t_3d_point v, t_shapes *sp)
 {
 	int	a;
 	int	b;
 	int	c;
 
-	a = vect.x;
-	b = vect.y;
-	c = vect.z;
+	a = v.x;
+	b = v.y;
+	c = v.z;
 	if (!(a >= -1 && a <= 1) || !(b >= -1 && b <= 1) || !(c >= -1 && c <= 1))
-		print_error(str, split, "normalized_vect", shapes);
+		print_error(s1, s2, "normalized_vect\n", sp);
 }
