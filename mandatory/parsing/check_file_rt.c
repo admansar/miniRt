@@ -6,7 +6,7 @@
 /*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/28 12:13:16 by selkhadr          #+#    #+#             */
-/*   Updated: 2023/08/28 15:17:31 by selkhadr         ###   ########.fr       */
+/*   Updated: 2023/09/02 00:13:47 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	init_shape(t_shapes *shapes)
 	shapes->cylinder = NULL;
 	shapes->sphere = NULL;
 	shapes->plane = NULL;
-	shapes->capsule = NULL;
 }
 
 void	initiaize_numbers_of_shapes(t_shapes *shapes)
@@ -25,14 +24,19 @@ void	initiaize_numbers_of_shapes(t_shapes *shapes)
 	shapes->cylinder = NULL;
 	shapes->plane = NULL;
 	shapes->sphere = NULL;
-	shapes->capsule = NULL;
 	shapes->ambient.nmb = 0;
 	shapes->light.nmb = 0;
 	shapes->camera.nmb = 0;
 	shapes->nmb_cy = 0;
 	shapes->nmb_sp = 0;
 	shapes->nmb_plane = 0;
-	shapes->nmb_capsule = 0;
+}
+
+void	read_from_file_sequel(char *gnl, t_shapes *shapes)
+{
+	if (gnl == NULL)
+		print_error(NULL, NULL, "empty file\n", shapes);
+	initiaize_numbers_of_shapes(shapes);
 }
 
 char	*read_from_file(t_shapes *shapes, int fd)
@@ -43,7 +47,7 @@ char	*read_from_file(t_shapes *shapes, int fd)
 
 	all = NULL;
 	gnl = get_next_line(fd);
-	initiaize_numbers_of_shapes(shapes);
+	read_from_file_sequel(gnl, shapes);
 	while (gnl)
 	{
 		if (!(ft_strncmp(gnl, "\n", ft_strlen(gnl)) == 0))

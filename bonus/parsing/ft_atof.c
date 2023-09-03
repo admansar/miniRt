@@ -6,7 +6,7 @@
 /*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 11:27:45 by selkhadr          #+#    #+#             */
-/*   Updated: 2023/08/28 12:17:48 by selkhadr         ###   ########.fr       */
+/*   Updated: 2023/08/29 01:44:34 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ double	_continue(int i, char *str, t_shapes *shapes)
 	return (sa);
 }
 
-void	ft_atof_sequel(char *str, int *i, int *d)
+void	ft_atof_sequel(char *str, int *i, long int *d)
 {
 	while (str[*i] >= 48 && str[*i] <= 57 && str[*i])
 	{
@@ -81,10 +81,10 @@ void	ft_atof_sequel(char *str, int *i, int *d)
 
 double	ft_atof(char *str, t_shapes *shapes)
 {
-	int		i;
-	int		count;
-	double	sa;
-	int		d;
+	int			i;
+	int			count;
+	double		sa;
+	long int	d;
 
 	i = 0;
 	if (str == NULL)
@@ -102,5 +102,7 @@ double	ft_atof(char *str, t_shapes *shapes)
 		i++;
 	ft_atof_sequel(str, &i, &d);
 	sa = _continue(i, str, shapes);
+	if (d > INT_MAX)
+		exit (1);
 	return (count * (d + sa));
 }

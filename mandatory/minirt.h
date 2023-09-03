@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minirt.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: admansar <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/28 18:09:30 by admansar          #+#    #+#             */
-/*   Updated: 2023/08/28 18:38:32 by admansar         ###   ########.fr       */
+/*   Updated: 2023/08/29 01:45:31 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <math.h>
 # include <stdbool.h>
 # include <fcntl.h>
+# include <limits.h>
 # include "libft/libft.h"
 # include "lib_point/lib_point.h"
 # include "raytracing/material.h"
@@ -75,28 +76,17 @@ typedef struct s_plane_info
 	int			nmb;
 }	t_plane_info;
 
-typedef struct s_capsule_info
-{
-	t_3d_point	top;
-	t_3d_point	bottom;
-	float		diameter;
-	t_3d_point	color;
-	int			nmb;
-}	t_capsule_info;
-
 typedef struct s_shapes
 {
 	int				nmb_cy;
 	int				nmb_sp;
 	int				nmb_plane;
-	int				nmb_capsule;
 	t_camera_info	camera;
 	t_light_info	light;
 	t_ambient_info	ambient;
 	t_sphere_info	*sphere;
 	t_plane_info	*plane;
 	t_cylinder_info	*cylinder;
-	t_capsule_info	*capsule;
 	t_all			*all;
 }	t_shapes;
 
@@ -118,8 +108,6 @@ void	check_light(t_shapes *shapes, char **split);
 //check_shapes file
 void	check_cylinder_sequel(char **s1, char **s2, t_shapes *shapes, int i);
 void	check_cylinder(t_shapes *shapes, char **split);
-void	check_capsule_sequel(t_shapes *shapes, char **str, char **split, int i);
-void	check_capsule(t_shapes *shapes, char **split);
 void	shapes_fnct(t_shapes *shapes, char **split);
 //check_validation file
 void	print_error(char **str, char **split, char *string, t_shapes *shapes);
@@ -131,7 +119,7 @@ void	valid_normalized_vect(char **s1, char **s2, t_3d_point v, t_shapes *sp);
 int		help(void);
 int		ft_strncmp_dual(const char *s1, const char *s2, size_t n);
 double	_continue(int i, char *str, t_shapes *shapes);
-void	ft_atof_sequel(char *str, int *i, int *d);
+void	ft_atof_sequel(char *str, int *i, long int *d);
 double	ft_atof(char *str, t_shapes *shapes);
 //minirt_split file
 char	**minirt_split(char *s);

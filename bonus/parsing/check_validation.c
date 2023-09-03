@@ -6,7 +6,7 @@
 /*   By: selkhadr <selkahdr@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 15:25:16 by selkhadr          #+#    #+#             */
-/*   Updated: 2023/08/28 12:18:57 by selkhadr         ###   ########.fr       */
+/*   Updated: 2023/08/29 01:58:16 by selkhadr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,13 @@ void	print_error(char **str, char **split, char *string, t_shapes *shapes)
 		free_double_array(str);
 	if (split)
 		free_double_array(split);
-	free (shapes->cylinder);
-	free (shapes->sphere);
-	free (shapes->plane);
-	free (shapes->capsule);
-	free (shapes);
+	if (shapes)
+	{
+		free (shapes->cylinder);
+		free (shapes->sphere);
+		free (shapes->plane);
+		free (shapes);
+	}
 	exit (1);
 }
 
